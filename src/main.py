@@ -1,17 +1,33 @@
 from pprint import pprint
-
-from extract import read_excel
-
-route = 'data/raw/excel/store_operations.xlsx'
-dataframes = read_excel(route)
-
-
-
-df_store = dataframes['stores']
-df_online_empty = (df_store['state'].isna()) &  (df_store['channel']=='Online')
-
-print(df_store)
-print(df_online_empty)
+from extract import read_excel,read_parquet_files
+from validate import validate_all_columns
+from config import REQUIRED_COLUMNS, RAW_EXCEL_PATH,BRONZE_PATH,SILVER_PATH,GOLD_PATH
+from load import save_parquet
+from transform import transform_all_dataframes_bronze
+from model import build_dim_date
 
 
+# Bronze Chapter
+dataframes = read_excel(RAW_EXCEL_PATH)
+validate_all_columns(dataframes,REQUIRED_COLUMNS)
+save_parquet(dataframes,BRONZE_PATH)
 
+
+
+
+#silver chapter
+
+# 1 - Getting all the dataframes to clean
+dataframes_bronze= read_parquet_files(BRONZE_PATH)
+
+
+#2 - Transform all bronze dataframes
+dataframes_silver = transform_all_dataframes_bronze(dataframes_bronze)
+
+# 3 - Save dataframe_silver dictionary to parquet 
+save_parquet(dataframes_silver,SILVER_PATH)
+
+
+
+
+#GOLD CHAPTER 
