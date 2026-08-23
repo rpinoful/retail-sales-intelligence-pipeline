@@ -1,5 +1,12 @@
 import pandas as pd
-from src.model import build_dim_date
+from src.model import build_dim_date, build_dim_products
+import pandas as pd
+from src.extract import read_parquet_files
+from src.config import SILVER_PATH
+
+
+
+
 
 # generating a dataframe for date table creation (DIM_DATE)
 
@@ -29,5 +36,54 @@ from src.model import build_dim_date
 # print(dates_df.head(25))
 
 
-dim_date = build_dim_date('2026-01-01','2026-12-31')
-print(dim_date)
+# dim_date = build_dim_date('2026-01-01','2026-12-31')
+# print(dim_date)
+
+
+
+# 1 - Receiving all the silver dictionary dataframe 
+silver_dataframes:dict[str, pd.DataFrame] = read_parquet_files(SILVER_PATH)
+
+
+
+# taking each dataframe
+df_products:pd.DataFrame = silver_dataframes['products'].copy()
+df_sales:pd.DataFrame = silver_dataframes['sales'].copy()
+df_stores:pd.DataFrame = silver_dataframes['stores'].copy()
+df_fixed_cost:pd.DataFrame= silver_dataframes['fixed_costs'].copy()
+df_dim_date = build_dim_date('2026-01-01','2026-12-31')
+
+
+# 2 - Building business logic from df_products
+# python -m exploration_gold.explore_gold
+# print(df_products.head(5))
+
+# print(df_products.duplicated(subset=['product_id']))
+
+
+
+
+
+
+# 3 - Building business logic from df_sales
+# python -m exploration_gold.explore_gold
+
+
+#checking if exists duplicated sales:
+# business rule if row is a unique sale
+
+
+#checking if all the product_id coincide with id products from a dimension products
+#print((~df_sales['product_id'].isin(df_products['product_id'])).sum())
+
+
+
+#checking if all the store_id coincide with id stores from a dimension stores
+#print((~df_sales['store_id'].isin(df_stores['store_id'])).sum())
+
+
+
+#checking if all dates coincide with dates from a dimension 
+print((~df_sales['sale_date'].isin(df_dim_date['date'])).sum())
+
+

@@ -21,4 +21,3 @@ def build_dim_date(start_date:str,end_date:str) -> pd.DataFrame:
     return dates_df
 
 
-def build_dim_
