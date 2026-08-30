@@ -1,5 +1,5 @@
 import pandas as pd
-from src.model import build_dim_date, build_dim_products
+from src.model import build_dim_date, build_dim_products,build_fact_fixed_costs
 import pandas as pd
 from src.extract import read_parquet_files
 from src.config import SILVER_PATH
@@ -63,9 +63,7 @@ df_dim_date = build_dim_date('2026-01-01','2026-12-31')
 
 
 
-
-
-# 3 - Building business logic from df_sales
+# # 3 - Building business logic from df_sales
 # python -m exploration_gold.explore_gold
 
 
@@ -84,6 +82,39 @@ df_dim_date = build_dim_date('2026-01-01','2026-12-31')
 
 
 #checking if all dates coincide with dates from a dimension 
-print((~df_sales['sale_date'].isin(df_dim_date['date'])).sum())
+# print((~df_sales['sale_date'].isin(df_dim_date['date'])).sum())
 
 
+
+
+# # 4 - Building business logic from build_fact_fixed_cost
+# python -m exploration_gold.explore_gold
+
+
+
+# # Sum columns 'A' and 'C' into a new column
+# df['N_Sum'] = df[['A', 'C']].sum(axis=1)
+
+# result= build_fact_fixed_costs(df_fixed_cost)
+# print(result.head(5))
+
+
+
+
+
+# 5 - Building business logic from build_dim_stores
+# python -m exploration_gold.explore_gold
+# print(df_stores.head(5))
+
+# print(df_stores.isna().sum())
+
+# print(df_stores.nunique())
+
+# print(df_stores.duplicated(subset=["store_id"]).sum())
+
+
+print(df_stores["city"].value_counts(dropna=False))
+print(df_stores["state"].value_counts(dropna=False))
+print(df_stores["channel"].value_counts(dropna=False))
+
+print(df_stores.head(5))
