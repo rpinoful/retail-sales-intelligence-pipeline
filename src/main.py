@@ -4,7 +4,7 @@ from validate import validate_all_columns
 from config import REQUIRED_COLUMNS, RAW_EXCEL_PATH,BRONZE_PATH,SILVER_PATH,GOLD_PATH
 from load import save_parquet
 from transform import transform_all_dataframes_bronze
-from model import build_dim_date
+from model import build_gold_model
 
 
 # Bronze Chapter
@@ -31,3 +31,5 @@ save_parquet(dataframes_silver,SILVER_PATH)
 
 
 #GOLD CHAPTER 
+dataframes_gold= build_gold_model(dataframes_silver,"2026-01-01","2026-12-31")
+save_parquet(dataframes_gold,GOLD_PATH)

@@ -39,11 +39,11 @@ def read_excel(route: Path) -> dict:
 
 
 
-def read_parquet_files(bronze_path_parquet:Path) -> dict:
+def read_parquet_files(path_parquet:Path) -> dict:
      # search all the parquet files in the folder:
-     dir_parquet = bronze_path_parquet.glob("*.parquet")
+     dir_parquet = path_parquet.glob("*.parquet")
      dataframes_dictionary_bronze = {f.stem:pd.read_parquet(f) for f in dir_parquet}
-     print(f" Was readed all the parquet files from bronze folder  {dataframes_dictionary_bronze.keys()} ✅ \n")
+     print(f" Was readed all the parquet files from path passed {dataframes_dictionary_bronze.keys()} ✅ \n")
      return dataframes_dictionary_bronze
 
 

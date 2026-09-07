@@ -62,7 +62,7 @@ def build_dim_stores(df_stores:pd.DataFrame) -> pd.DataFrame:
 
 
 
-def build_gold_model(dataframes_silver: dict[str, pd.DataFrame]):
+def build_gold_model(dataframes_silver: dict[str, pd.DataFrame],start_date:str,end_date:str)-> dict[str, pd.DataFrame]:
     #Extract each DataFrame from the Silver dictionary
     df_products:pd.DataFrame = dataframes_silver['products']
     df_sales:pd.DataFrame = dataframes_silver['sales']
@@ -74,7 +74,19 @@ def build_gold_model(dataframes_silver: dict[str, pd.DataFrame]):
     df_products= build_dim_products(df_products)
     df_sales= build_fact_sales(df_sales)
     df_stores= build_dim_stores(df_stores)
-    df_fixed_cost= build_fact_fixed_costs(df_fixed_cost)
+    df_fixed_costs= build_fact_fixed_costs(df_fixed_cost)
+    df_dim_date= build_dim_date(start_date,end_date)
+
+    return {
+        "dim_products": df_products,
+        "fact_sales": df_sales,
+        "dim_stores": df_stores,
+        "fact_fixed_costs": df_fixed_costs,
+        "dim_date": df_dim_date,
+    }
+
+
+
 
 
 
