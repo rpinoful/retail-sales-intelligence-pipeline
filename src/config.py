@@ -39,7 +39,7 @@ REQUIRED_COLUMNS: dict[str, list[str]] = {
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-RAW_EXCEL_PATH = 'data/raw/excel/store_operations.xlsx'
+RAW_EXCEL_PATH = PROJECT_ROOT / "data" / "raw" / "excel" / "store_operations.xlsx"
 
 BRONZE_PATH = PROJECT_ROOT / "data" / "bronze"
 SILVER_PATH = PROJECT_ROOT / "data" / "silver"
