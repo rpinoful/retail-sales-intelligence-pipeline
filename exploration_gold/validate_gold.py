@@ -187,38 +187,121 @@ dim_dates:pd.DataFrame =gold_tables_parquet['dim_date']
 
 # 2 - How many rows not coincide with the formula establish before net_amount = gross_amount - discount_amount
 
-# calculate net_amount
-simulate_net_amount = (fact_sales['gross_amount'] - fact_sales['discount_amount'])
+# # calculate net_amount
+# simulate_net_amount = (fact_sales['gross_amount'] - fact_sales['discount_amount'])
 
-# sum of comparing rows 
-filter_net_amount = (simulate_net_amount.round(2) != fact_sales['net_amount'].round(2))
-
-
-
-# FILTERING DATAFRAME
-df_difference_net_amount= fact_sales[filter_net_amount]
+# # sum of comparing rows 
+# filter_net_amount = (simulate_net_amount.round(2) != fact_sales['net_amount'].round(2))
 
 
 
-#NOTES : HAVE A DIFERRENCE OF 0.01 BETWEEN COLUMNS , I GO TO TRY TO RECREATE BOTH CALCULATES 
-
-# A - WAY 
-df_difference_net_amount['net_amount_a'] = (fact_sales['gross_amount'] - fact_sales['discount_amount'])
+# # FILTERING DATAFRAME
+# df_difference_net_amount= fact_sales[filter_net_amount]
 
 
-# B - WAY
- 
-# 1 - gross amount_precise
-df_difference_net_amount['gross_amount_precise'] = (df_difference_net_amount['quantity']) * (df_difference_net_amount['unit_price_brl'])
 
-# 2 - discount_precise
-df_difference_net_amount['discount_precise'] = (df_difference_net_amount['gross_amount_precise']) * (df_difference_net_amount['discount_pct'])
+# #NOTES : HAVE A DIFERRENCE OF 0.01 BETWEEN COLUMNS , I GO TO TRY TO RECREATE BOTH CALCULATES 
 
-# 3 - net_precise
-df_difference_net_amount['net_amount_b']= df_difference_net_amount['gross_amount_precise'] - df_difference_net_amount['discount_precise'] 
+# # A - WAY 
+# df_difference_net_amount['net_amount_a'] = (fact_sales['gross_amount'] - fact_sales['discount_amount']).round(2)
 
 
-df_difference_net_amount = df_difference_net_amount.drop(columns=["gross_amount_precise", "discount_precise"])
+# # B - WAY
+
+# # 1 - gross amount_precise
+# df_difference_net_amount['gross_amount_precise'] = (df_difference_net_amount['quantity']) * (df_difference_net_amount['unit_price_brl'])
+
+# # 2 - discount_precise
+# df_difference_net_amount['discount_precise'] = (df_difference_net_amount['gross_amount_precise']) * (df_difference_net_amount['discount_pct'])
+
+# # 3 - net_precise
+# df_difference_net_amount['net_amount_b']= (df_difference_net_amount['gross_amount_precise'] - df_difference_net_amount['discount_precise']).round(2)
 
 
-print(df_difference_net_amount)
+# df_difference_net_amount = df_difference_net_amount.drop(columns=["gross_amount_precise", "discount_precise"])
+
+
+# print(df_difference_net_amount)
+
+
+
+# DIM_PRODUCTS
+
+# # python -m exploration_gold.validate_gold
+
+
+# 1 - CHECKIN IF PRODUCT_ID COLUMN  HAS UNIQUE VALUES 
+
+# # return a list with all the unique values from a column product_id
+# unique_product_id = dim_products['product_id'].unique()
+
+
+# # how many unique value has a column product_id , returns a serie with any value column and occurrences
+# qty_duplicated_product_id = ((dim_products['product_id'].value_counts())>1).sum()
+
+
+# print(unique_product_id)
+# print(qty_duplicated_product_id)
+
+
+
+
+
+# 2 - checking products categories , if have typing issues writing this 
+
+#2.1 knowing all the categories from a dim_products
+
+# each_category_number_repeat = dim_products['category'].value_counts()
+# print(each_category_number_repeat)
+
+
+# # note : if appears new categories , and you want to check how categories are valid from this dataframe , how you do that ?
+# # 1 - Create a list with valid categories 
+# allowed_categories = ['Alimentos','Chás','Snacks','Farinhas']
+
+
+# # isin ask : each value category are into  an allowed_categories
+# invalid_categories = ~(dim_products['category'].isin(allowed_categories))
+# print(invalid_categories)
+
+
+
+#3 - UNIT_COST checking if has costs with values like 0 or negative values
+# invalid_unit_costs = (dim_products['unit_cost']<=0).sum()
+# print(invalid_unit_costs)
+
+
+
+
+# 4 - Checking exhorbitate prices : business rule 3X top of average 
+
+# 1 - Calculate the average from uint_cost
+# cost_upper_limit:float = (3 * dim_products['unit_cost'].mean()).round(2)
+
+# copia_df:pd.DataFrame = dim_products[dim_products['unit_cost']> average_3X]
+
+# outside_numbers = (dim_products['unit_cost'] > average_3X).sum()
+
+# print(copia_df)
+# print(outside_numbers)
+
+
+
+
+# 5 - Checking supplier_currency
+# allowed_currencies = ['BRL','USD']
+
+# valid_currencies = dim_products['supplier_currency'].isin(allowed_currencies)
+
+# invalid_currencies = ~(dim_products['supplier_currency'].isin(allowed_currencies))
+
+# qty_invalid_currencies = invalid_currencies.sum()
+
+# print(valid_currencies)
+# print(invalid_currencies)
+# print(qty_invalid_currencies)
+
+
+
+# 6 - Checking active column 
+print(dim_products['active'].dtype)
