@@ -10,6 +10,15 @@
             "cwd": "${workspaceFolder}",
             "console": "integratedTerminal",
             "justMyCode": true
+        },
+        {
+            "name": "Debug validate_gold",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "exploration_gold.validate_gold",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }
