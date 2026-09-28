@@ -304,4 +304,30 @@ dim_dates:pd.DataFrame =gold_tables_parquet['dim_date']
 
 
 # 6 - Checking active column 
-print(dim_products['active'].dtype)
+# print(dim_products['active'].dtype)
+
+
+# # 6-1 count how many products are actived
+# products_activate_checking = (dim_products['active'].value_counts().reset_index())
+# print(products_activate_checking)
+
+
+
+
+
+# ---------------------- DIM_STORES---------------------------------------#
+# python -m exploration_gold.validate_gold
+
+# 1 - store_id column
+# Checking unicity
+any_values = dim_stores['store_id'].value_counts()
+
+# check how values appears - 1 Filtering a serie
+count_values:pd.Series = any_values[any_values>1]
+
+
+# count how many duplicated there are into dataframe 
+count_duplicated:int = dim_stores['store_id'].duplicated().sum()
+
+
+print(count_duplicated)
