@@ -331,3 +331,87 @@ count_duplicated:int = dim_stores['store_id'].duplicated().sum()
 
 
 print(count_duplicated)
+
+# 6.1 - Checking blank values into strone_name column
+# python -m exploration_gold.validate_gold
+
+# remove blank spaces starting and ending string
+# removing_blank_start_end = dim_stores['store_name'].str.strip()
+
+# # count quantity of characters from a column that contais a string
+# qty_chars_store_name = removing_blank_start_end.str.len()
+
+
+# # returning a serie with boll values for condition , the condition is string equals to cero , cero is a invalid shop
+# invalid_shops = (qty_chars_store_name ==0)
+
+
+
+# filtering dataframe invalid rows
+# dim_stores = dim_stores[invalid_shops]
+# print(dim_stores)
+
+
+# filtering dataframe with valid rows
+# dim_stores = dim_stores[~invalid_shops]
+# print(dim_stores)
+
+
+
+
+
+
+######## - CREATING FUNCTION TO USE THIS SAME CODE ----#######
+
+# validating - empty columns from dim_stores dataframe , but the logic works with others dataframes as well ##
+def count_empty_string_serie(dataframe:pd.DataFrame,columns:list) -> dict:
+    result:dict= {}
+
+    # 1 - iterate a column list
+    for column_name in columns:
+        # 2 - taking a serie
+        serie = dataframe[column_name]
+
+        # 3 - how many values empty exist in the actual column
+        qty_rows_empty:int =(serie.str.strip().str.len()==0).sum()
+
+        # 4 - Adding result to the dictionary
+        result[column_name] = qty_rows_empty
+
+    return result
+
+
+df_columns = dim_stores.select_dtypes(include='string').columns.to_list()
+dataframe_qty_rows_empty = count_empty_string_serie(dim_stores,df_columns)
+
+
+
+
+# validating channel from dim_stores dataframe #####
+
+# validate channels
+channels:list = ['Física','Online']
+
+
+
+#  quantity of valid channels using isin to check dataframe column with validate_channel_list
+valid_channels:pd.Series = dim_stores['channel'].isin(channels)
+
+
+qty_invalid_channels = (~valid_channels).sum()
+
+
+print(f" Quantity of invalid channels{qty_invalid_channels}")
+
+
+
+
+# checking if same shop have other ids
+duplicates_between_id_shop_name = dim_stores.duplicated(subset=['store_name','city','state'],keep=False)
+print(duplicates_between_id_shop_name)
+
+
+
+#checking with groupby duplicated shops 
+duplicated_shops_group_by = dim_stores.groupby('store_name')['store_id'].nunique()
+print(duplicated_shops_group_by)
