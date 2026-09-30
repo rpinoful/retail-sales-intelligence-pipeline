@@ -20,7 +20,7 @@ fact_sales:pd.DataFrame = gold_tables_parquet['fact_sales']
 dim_products:pd.DataFrame =gold_tables_parquet['dim_products']
 dim_stores:pd.DataFrame =gold_tables_parquet['dim_stores']
 dim_dates:pd.DataFrame =gold_tables_parquet['dim_date']
-
+fact_fixed_costs:pd.DataFrame = gold_tables_parquet['fact_fixed_costs']
 
 # 1 - how many rows and columns 
 # print(fact_sales.shape)
@@ -364,54 +364,106 @@ print(count_duplicated)
 ######## - CREATING FUNCTION TO USE THIS SAME CODE ----#######
 
 # validating - empty columns from dim_stores dataframe , but the logic works with others dataframes as well ##
-def count_empty_string_serie(dataframe:pd.DataFrame,columns:list) -> dict:
-    result:dict= {}
+# def count_empty_string_serie(dataframe:pd.DataFrame,columns:list) -> dict:
+#     result:dict= {}
 
-    # 1 - iterate a column list
-    for column_name in columns:
-        # 2 - taking a serie
-        serie = dataframe[column_name]
+#     # 1 - iterate a column list
+#     for column_name in columns:
+#         # 2 - taking a serie
+#         serie = dataframe[column_name]
 
-        # 3 - how many values empty exist in the actual column
-        qty_rows_empty:int =(serie.str.strip().str.len()==0).sum()
+#         # 3 - how many values empty exist in the actual column
+#         qty_rows_empty:int =(serie.str.strip().str.len()==0).sum()
 
-        # 4 - Adding result to the dictionary
-        result[column_name] = qty_rows_empty
+#         # 4 - Adding result to the dictionary
+#         result[column_name] = qty_rows_empty
 
-    return result
-
-
-df_columns = dim_stores.select_dtypes(include='string').columns.to_list()
-dataframe_qty_rows_empty = count_empty_string_serie(dim_stores,df_columns)
+#     return result
 
 
-
-
-# validating channel from dim_stores dataframe #####
-
-# validate channels
-channels:list = ['Física','Online']
-
-
-
-#  quantity of valid channels using isin to check dataframe column with validate_channel_list
-valid_channels:pd.Series = dim_stores['channel'].isin(channels)
-
-
-qty_invalid_channels = (~valid_channels).sum()
-
-
-print(f" Quantity of invalid channels{qty_invalid_channels}")
+# df_columns = dim_stores.select_dtypes(include='string').columns.to_list()
+# dataframe_qty_rows_empty = count_empty_string_serie(dim_stores,df_columns)
 
 
 
 
-# checking if same shop have other ids
-duplicates_between_id_shop_name = dim_stores.duplicated(subset=['store_name','city','state'],keep=False)
-print(duplicates_between_id_shop_name)
+# # validating channel from dim_stores dataframe #####
+
+# # validate channels
+# channels:list = ['Física','Online']
 
 
 
-#checking with groupby duplicated shops 
-duplicated_shops_group_by = dim_stores.groupby('store_name')['store_id'].nunique()
-print(duplicated_shops_group_by)
+# #  quantity of valid channels using isin to check dataframe column with validate_channel_list
+# valid_channels:pd.Series = dim_stores['channel'].isin(channels)
+
+
+# qty_invalid_channels = (~valid_channels).sum()
+
+
+# print(f" Quantity of invalid channels{qty_invalid_channels}")
+
+
+
+
+# # checking if same shop have other ids
+# duplicates_between_id_shop_name = dim_stores.duplicated(subset=['store_name','city','state'],keep=False)
+# print(duplicates_between_id_shop_name)
+
+
+
+# #checking with groupby duplicated shops 
+# duplicated_shops_group_by = dim_stores.groupby('store_name')['store_id'].nunique()
+# print(duplicated_shops_group_by)
+
+
+
+
+
+
+
+
+
+####################### CHECKING FACT TABLES #########################################
+# python -m exploration_gold.validate_gold
+
+
+# FACT_FIXED_COSTS
+
+
+# 1 - STORE_ID + MONTH : 2 WAYS 
+
+# 1.1 USING DUPLICATED + SUBSET , IF RETURN TRUE THAT MEANS EXIST A COMBINATION OF ROWS WITH COLUMNS REPEATING VALUES
+# IN THIS CASE USING DATES + STORE_ID 
+# store_id_plus_start_mont:pd.Series = fact_fixed_costs.duplicated(subset=['store_id','start_month'],keep='first')
+
+# print(store_id_plus_start_mont)
+
+
+
+# # 2 - Using groupby + nunique
+# # the logic is if exists from data , store_id >1 means duplicated register
+# groupby_unique_store_id = fact_fixed_costs.groupby(['store_id','start_month']).size()
+
+# print(groupby_unique_store_id)
+
+
+
+
+
+## 3 - Checking if all stores id from fact_costs exists into dim_stores
+# 2 - Ways 
+
+
+# 3 .1 only count how many stores_id are invalidate using isin + sum
+valid_store_id = fact_fixed_costs['store_id'].isin(dim_stores['store_id'])
+
+qty_invalid_store_id =((~valid_store_id)).sum()
+
+
+
+# 3.2 if you want to identify which dataframes rows are invalidate 
+df_store_id_invalidate = fact_fixed_costs[~valid_store_id]
+
+
+print(df_store_id_invalidate)
