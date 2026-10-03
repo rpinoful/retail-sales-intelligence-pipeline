@@ -44,3 +44,11 @@ RAW_EXCEL_PATH = PROJECT_ROOT / "data" / "raw" / "excel" / "store_operations.xls
 BRONZE_PATH = PROJECT_ROOT / "data" / "bronze"
 SILVER_PATH = PROJECT_ROOT / "data" / "silver"
 GOLD_PATH = PROJECT_ROOT / "data" / "gold"
+
+
+
+
+
+
+# Parameters repeative functions 
+FIXED_COST_COLUMNS = ['store_id', 'rent_brl', 'payroll_brl', 'utilities_brl', 'other_costs_brl', 'total_fixed_cost_brl']

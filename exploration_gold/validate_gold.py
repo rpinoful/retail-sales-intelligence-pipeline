@@ -1,5 +1,5 @@
 from src.extract import read_parquet_files
-from src.config import GOLD_PATH
+from src.config import GOLD_PATH,FIXED_COST_COLUMNS 
 import pandas as pd
 
 #reading_all_gold_parquet_tables
@@ -456,14 +456,38 @@ print(count_duplicated)
 
 
 # 3 .1 only count how many stores_id are invalidate using isin + sum
-valid_store_id = fact_fixed_costs['store_id'].isin(dim_stores['store_id'])
+# valid_store_id = fact_fixed_costs['store_id'].isin(dim_stores['store_id'])
 
-qty_invalid_store_id =((~valid_store_id)).sum()
-
-
-
-# 3.2 if you want to identify which dataframes rows are invalidate 
-df_store_id_invalidate = fact_fixed_costs[~valid_store_id]
+# qty_invalid_store_id =((~valid_store_id)).sum()
 
 
-print(df_store_id_invalidate)
+
+# # 3.2 if you want to identify which dataframes rows are invalidate 
+# df_store_id_invalidate = fact_fixed_costs[~valid_store_id]
+
+
+# print(df_store_id_invalidate)
+
+
+
+
+
+
+# 4 - Checking all columns to negatives values 
+def negative_values_dataframe(dataframe:pd.DataFrame, columns:list)-> dict :
+    result = {}
+    for column in columns :
+        negative_values = (dataframe[column]<0).sum()
+        result[column] = negative_values
+    
+    
+    return result
+
+
+
+
+summary = negative_values_dataframe(fact_fixed_costs,FIXED_COST_COLUMNS)
+
+
+
+
