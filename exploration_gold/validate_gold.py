@@ -1,5 +1,8 @@
+from unittest import result
+from pprint import pprint
+
 from src.extract import read_parquet_files
-from src.config import GOLD_PATH
+from src.config import GOLD_PATH,COLUMNS_LIST_FACT_FIXED_COSTS
 import pandas as pd
 
 #reading_all_gold_parquet_tables
@@ -320,17 +323,17 @@ fact_fixed_costs:pd.DataFrame = gold_tables_parquet['fact_fixed_costs']
 
 # 1 - store_id column
 # Checking unicity
-any_values = dim_stores['store_id'].value_counts()
+# any_values = dim_stores['store_id'].value_counts()
 
-# check how values appears - 1 Filtering a serie
-count_values:pd.Series = any_values[any_values>1]
-
-
-# count how many duplicated there are into dataframe 
-count_duplicated:int = dim_stores['store_id'].duplicated().sum()
+# # check how values appears - 1 Filtering a serie
+# count_values:pd.Series = any_values[any_values>1]
 
 
-print(count_duplicated)
+# # count how many duplicated there are into dataframe 
+# count_duplicated:int = dim_stores['store_id'].duplicated().sum()
+
+
+# print(count_duplicated)
 
 # 6.1 - Checking blank values into strone_name column
 # python -m exploration_gold.validate_gold
@@ -456,14 +459,152 @@ print(count_duplicated)
 
 
 # 3 .1 only count how many stores_id are invalidate using isin + sum
-valid_store_id = fact_fixed_costs['store_id'].isin(dim_stores['store_id'])
+# # valid_store_id = fact_fixed_costs['store_id'].isin(dim_stores['store_id'])
 
-qty_invalid_store_id =((~valid_store_id)).sum()
-
-
-
-# 3.2 if you want to identify which dataframes rows are invalidate 
-df_store_id_invalidate = fact_fixed_costs[~valid_store_id]
+# # qty_invalid_store_id =((~valid_store_id)).sum()
 
 
-print(df_store_id_invalidate)
+
+# # # 3.2 if you want to identify which dataframes rows are invalidate 
+# # df_store_id_invalidate = fact_fixed_costs[~valid_store_id]
+
+
+# # print(df_store_id_invalidate)
+
+
+
+
+# 4 - Checking negatives values , all columns from a dataframe using a function 
+
+# def count_negative_values_by_column(dataframe:pd.DataFrame,columns:list) -> dict:
+#     result ={}
+    
+#     #1 - iterating dataeach column , using list and dataframe
+#     for column_name in columns:
+#         # 2 - Taking all values from a dataframe column (serie), and count how many negative values exists
+#         negative_values:int = (dataframe[column_name]<0).sum()
+        
+#         # 3 - Adding values to a dictionary
+#         result[column_name]= negative_values
+        
+#     return result
+
+    
+    
+    
+    
+# negative_values_summary =count_negative_values_by_column(fact_fixed_costs,COLUMNS_LIST_FACT_FIXED_COSTS)
+
+
+
+
+
+
+## 5 - Checking if some column have the 0 value
+
+# # columns summary with 0 values and all numeric columns 
+# zero_costs_ = (fact_fixed_costs[COLUMNS_LIST_FACT_FIXED_COSTS]==0).sum()
+
+
+# # creating mask like condition to pass to dataframe ,IMPORTANT : any(axis=1) return  True almost one value in a row equal to 0
+# condition_rows = (fact_fixed_costs[COLUMNS_LIST_FACT_FIXED_COSTS]==0).any(axis=1)
+
+
+
+# # creating mask like condition to pass to dataframe ,IMPORTANT : all(axis=1) return True when all the values from a row are equals to zero
+# condition_rows = (fact_fixed_costs[COLUMNS_LIST_FACT_FIXED_COSTS]==0).all(axis=1)
+
+
+
+# # Filtering dataframe with 0 values rows 
+# fact_fixed_zero_costs = fact_fixed_costs[condition_rows]
+
+
+
+
+
+## 6 - Checking if exist some fisica shop with rent brl 0
+
+
+
+
+# resultado = fact_fixed_costs.merge(
+#     dim_stores,
+#     on = "store_id",
+#     how= "left"   
+# )
+
+
+
+
+
+#filtering shops with channel fisica and it rent be equals to zero
+# resultado_filter = resultado.loc[
+#     (resultado['rent_brl']==0) &
+#     (resultado['channel']== 'Física')   
+# ]
+
+
+
+# print(resultado_filter)
+
+
+# print(resultado['channel'].unique())
+
+
+
+# #filtering only rows without NAN values in it columns
+# resultado_without_NaN = resultado.loc[resultado.notna().all(axis=1)]
+
+# #not_na = filter a dataframe with boolean values False to NaN and True To normal values 
+# # all(axis=1) analize to dataframe returns for not_na if exist a False value return False in it series
+
+# # loc apply the boolean condition to returns a filter dataframe
+
+# print(resultado_without_NaN)
+
+
+
+
+
+
+# DATE ANALYSIS FROM DATES COLUMNNS 
+
+
+# 1 - HOW MANY REGISTERS FROM START_MONTH ARE DIFFERENT FROM 1 , note this returns a series so you can use like a mask without any axis
+# days_equals = ((fact_fixed_costs['start_month'].dt.day)!=1).sum()
+
+
+# # Creating a mask 
+# mask = (fact_fixed_costs['start_month'].dt.day)!=1
+
+
+# # dataframe filter
+# result = fact_fixed_costs[mask]
+
+
+# print(f" Dates differents to day one : {days_equals}")
+# print(result)
+
+
+
+
+# 2 - Function to analize outliers 
+def outliers_costs (dataframe:pd.DataFrame,columns:list)->dict:
+    result:dict = {}
+    for column in columns:
+        media:float = dataframe[column].mean()
+        limite = (3 * media)
+        outliers = (dataframe[column]> limite).sum()
+            
+        
+        result[column] = outliers
+    
+    
+    return result    
+
+
+
+
+dict_outliers = outliers_costs(fact_fixed_costs,COLUMNS_LIST_FACT_FIXED_COSTS)
+pprint(dict_outliers)
