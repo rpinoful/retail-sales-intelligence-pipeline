@@ -1,8 +1,7 @@
-from unittest import result
 from pprint import pprint
 
 from src.extract import read_parquet_files
-from src.config import GOLD_PATH,COLUMNS_LIST_FACT_FIXED_COSTS
+from src.config import FIXED_COST_COLUMNS, GOLD_PATH
 import pandas as pd
 
 #reading_all_gold_parquet_tables
@@ -474,45 +473,25 @@ fact_fixed_costs:pd.DataFrame = gold_tables_parquet['fact_fixed_costs']
 
 
 
-# 4 - Checking negatives values , all columns from a dataframe using a function 
-
-# def count_negative_values_by_column(dataframe:pd.DataFrame,columns:list) -> dict:
-#     result ={}
-    
-#     #1 - iterating dataeach column , using list and dataframe
-#     for column_name in columns:
-#         # 2 - Taking all values from a dataframe column (serie), and count how many negative values exists
-#         negative_values:int = (dataframe[column_name]<0).sum()
-        
-#         # 3 - Adding values to a dictionary
-#         result[column_name]= negative_values
-        
-#     return result
-
-    
-    
-    
-    
-# negative_values_summary =count_negative_values_by_column(fact_fixed_costs,COLUMNS_LIST_FACT_FIXED_COSTS)
+# 4 - Check negative values in the fixed-cost amount columns.
+def negative_values_dataframe(dataframe: pd.DataFrame, columns: list[str]) -> dict[str, int]:
+    return {column: int((dataframe[column] < 0).sum()) for column in columns}
 
 
+negative_values_summary = negative_values_dataframe(fact_fixed_costs, FIXED_COST_COLUMNS)
+pprint(negative_values_summary)
 
 
+## 5 - Checking if some column has the 0 value
 
+# # columns summary with 0 values and all numeric columns
+# zero_costs_ = (fact_fixed_costs[FIXED_COST_COLUMNS] == 0).sum()
 
-## 5 - Checking if some column have the 0 value
+# # any(axis=1): at least one value in the row is zero
+# condition_rows = (fact_fixed_costs[FIXED_COST_COLUMNS] == 0).any(axis=1)
 
-# # columns summary with 0 values and all numeric columns 
-# zero_costs_ = (fact_fixed_costs[COLUMNS_LIST_FACT_FIXED_COSTS]==0).sum()
-
-
-# # creating mask like condition to pass to dataframe ,IMPORTANT : any(axis=1) return  True almost one value in a row equal to 0
-# condition_rows = (fact_fixed_costs[COLUMNS_LIST_FACT_FIXED_COSTS]==0).any(axis=1)
-
-
-
-# # creating mask like condition to pass to dataframe ,IMPORTANT : all(axis=1) return True when all the values from a row are equals to zero
-# condition_rows = (fact_fixed_costs[COLUMNS_LIST_FACT_FIXED_COSTS]==0).all(axis=1)
+# # all(axis=1): every value in the row is zero
+# condition_rows = (fact_fixed_costs[FIXED_COST_COLUMNS] == 0).all(axis=1)
 
 
 
@@ -568,7 +547,7 @@ fact_fixed_costs:pd.DataFrame = gold_tables_parquet['fact_fixed_costs']
 
 
 
-# DATE ANALYSIS FROM DATES COLUMNNS 
+# DATE ANALYSIS FROM DATES COLUMNNS
 
 
 # 1 - HOW MANY REGISTERS FROM START_MONTH ARE DIFFERENT FROM 1 , note this returns a series so you can use like a mask without any axis
@@ -606,5 +585,5 @@ def outliers_costs (dataframe:pd.DataFrame,columns:list)->dict:
 
 
 
-dict_outliers = outliers_costs(fact_fixed_costs,COLUMNS_LIST_FACT_FIXED_COSTS)
+dict_outliers = outliers_costs(fact_fixed_costs, FIXED_COST_COLUMNS)
 pprint(dict_outliers)
