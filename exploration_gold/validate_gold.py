@@ -474,12 +474,12 @@ fact_fixed_costs:pd.DataFrame = gold_tables_parquet['fact_fixed_costs']
 
 
 # 4 - Check negative values in the fixed-cost amount columns.
-def negative_values_dataframe(dataframe: pd.DataFrame, columns: list[str]) -> dict[str, int]:
-    return {column: int((dataframe[column] < 0).sum()) for column in columns}
+# def negative_values_dataframe(dataframe: pd.DataFrame, columns: list[str]) -> dict[str, int]:
+#     return {column: int((dataframe[column] < 0).sum()) for column in columns}
 
 
-negative_values_summary = negative_values_dataframe(fact_fixed_costs, FIXED_COST_COLUMNS)
-pprint(negative_values_summary)
+# negative_values_summary = negative_values_dataframe(fact_fixed_costs, FIXED_COST_COLUMNS)
+# pprint(negative_values_summary)
 
 
 ## 5 - Checking if some column has the 0 value
@@ -569,21 +569,67 @@ pprint(negative_values_summary)
 
 
 # 2 - Function to analize outliers 
-def outliers_costs (dataframe:pd.DataFrame,columns:list)->dict:
-    result:dict = {}
-    for column in columns:
-        media:float = dataframe[column].mean()
-        limite = (3 * media)
-        outliers = (dataframe[column]> limite).sum()
+# def outliers_costs (dataframe:pd.DataFrame,columns:list)->dict:
+#     result:dict = {}
+#     for column in columns:
+#         media:float = dataframe[column].mean()
+#         limite = (3 * media)
+#         outliers = (dataframe[column]> limite).sum()
             
         
-        result[column] = outliers
+#         result[column] = outliers
     
     
-    return result    
+#     return result    
 
 
 
 
-dict_outliers = outliers_costs(fact_fixed_costs, FIXED_COST_COLUMNS)
-pprint(dict_outliers)
+# dict_outliers = outliers_costs(fact_fixed_costs, FIXED_COST_COLUMNS)
+# pprint(dict_outliers)
+
+
+
+
+
+
+# DIM_DATES 
+
+
+
+# # # 1 - Checking  if exists duplicates dates 
+# # duplicates = dim_dates['date'].duplicated().value_counts()
+
+# # print(duplicates)
+
+
+# # # if you want to create a mask with duplicated dates 
+# # mask  = dim_dates['date'].duplicated(keep=False) # mark all duplicated occurrences, including the first one
+# # df_filtered = dim_dates[mask]
+
+
+
+
+
+
+
+## 2 - Checking interval days 
+
+# expect difference 1 day
+# interval_days = dim_dates['date'].diff()
+
+
+# # mask 
+# mask = interval_days.dt.days > 1
+
+# # if you want a exactly mask including time and hours 
+# mask_exact = interval_days > pd.Timedelta(days=1)
+
+
+# # how many outliers exists from date columns into dataframe
+# quantity_dates = mask_exact.sum()
+
+
+# print(quantity_dates)
+
+
