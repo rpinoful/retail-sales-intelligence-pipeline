@@ -582,11 +582,23 @@ fact_fixed_costs:pd.DataFrame = gold_tables_parquet['fact_fixed_costs']
     
 #     return result    
 
+# 4 - Checking all columns to negatives values 
+# def negative_values_dataframe(dataframe:pd.DataFrame, columns:list)-> dict :
+#     result = {}
+#     for column in columns :
+#         negative_values = (dataframe[column]<0).sum()
+#         result[column] = negative_values
+    
+    
+#     return result
+
 
 
 
 # dict_outliers = outliers_costs(fact_fixed_costs, FIXED_COST_COLUMNS)
 # pprint(dict_outliers)
+
+# summary = negative_values_dataframe(fact_fixed_costs,FIXED_COST_COLUMNS)
 
 
 
@@ -633,3 +645,44 @@ fact_fixed_costs:pd.DataFrame = gold_tables_parquet['fact_fixed_costs']
 # print(quantity_dates)
 
 
+# 5 - checking 0 values in fixed_costs dataframe 
+
+
+#5.1 Creating a resume to count how many 0 values exists by column
+# summary = (fact_fixed_costs[FIXED_COST_COLUMNS]==0).sum()
+
+
+# # 5.2 creating a mask 
+# mask = (fact_fixed_costs[FIXED_COST_COLUMNS]==0).any(axis=1)
+
+
+# # 5 .2 Creating a copy dataframe with the 0 values filtered
+# dataframe_filter = fact_fixed_costs[mask]
+
+
+# print(summary)
+# print(mask)
+# print(dataframe_filter)
+
+
+
+# 6 - Checking fisica shop with rent_brl == 0 
+
+
+# 1 - Filter left and right table before merge 
+
+left_table = fact_fixed_costs [fact_fixed_costs['rent_brl']==0]
+
+
+right_table = dim_stores [dim_stores['channel']=='Física']
+
+
+# 2 - merge left and right table 
+result = left_table.merge(
+    right_table,
+    on='store_id',
+    how='left'
+)
+
+
+print(result)
