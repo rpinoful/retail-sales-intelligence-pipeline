@@ -633,3 +633,36 @@ fact_fixed_costs:pd.DataFrame = gold_tables_parquet['fact_fixed_costs']
 # print(quantity_dates)
 
 
+
+
+
+
+
+## 3 - check if year and month matched with the date column
+checking_year = dim_dates['date'].dt.year == dim_dates['year']
+checking_month = dim_dates['date'].dt.month == dim_dates['month']
+
+
+# quantity of registers 
+qty_year_register_validate = checking_year.sum()
+qty_month_register_validate = checking_month.sum()
+
+
+# filter only false columns
+
+# 1 - creating a mask for year
+invalid_years = ~(dim_dates['date'].dt.year == dim_dates['year'])
+
+# 1 - creating a mask for months
+invalid_months = ~(dim_dates['date'].dt.month == dim_dates['month'])
+
+
+
+
+# filtering the dataframe with loc if have year or month invalidate 
+df_filtered = dim_dates.loc[invalid_years | invalid_months]
+
+print(df_filtered)
+
+print(f" Quantity of invalid registers from year column : {invalid_years.sum()}")
+print(f" Quantity of invalid registers from month column: {invalid_months.sum()}")

@@ -70,17 +70,13 @@ def transform_all_dataframes_bronze(dataframe: dict[str, pd.DataFrame])->dict[st
     #iterate dictionary dataframe
     for table_name,df in dataframe.items():
         transform_function:function = transformers[table_name]
-        df_silver:pd.DataFrame =transform_function(df)
+        df_silver:pd.DataFrame = transform_function(df)
         silver_dataframe_dictionary[table_name]:dict[str, pd.DataFrame]= df_silver
 
 
     return silver_dataframe_dictionary
 
-
-
-
-
-
+# dictionary with each function
 transformers = {
     "sales": transform_sales,
     "stores" :transform_stores,

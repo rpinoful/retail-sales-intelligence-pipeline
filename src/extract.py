@@ -8,7 +8,7 @@ dict_dataframes = {}
 
 
 
-def read_excel(route: Path) -> dict:
+def read_excel(route: Path) ->  dict[str, pd.DataFrame]:
     folder = Path(route)
 
     if not folder.exists():
