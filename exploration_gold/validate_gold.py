@@ -645,7 +645,7 @@ fact_fixed_costs:pd.DataFrame = gold_tables_parquet['fact_fixed_costs']
 # print(quantity_dates)
 
 
-<<<<<<< HEAD
+
 
 
 
@@ -679,7 +679,8 @@ print(df_filtered)
 
 print(f" Quantity of invalid registers from year column : {invalid_years.sum()}")
 print(f" Quantity of invalid registers from month column: {invalid_months.sum()}")
-=======
+
+
 # 5 - checking 0 values in fixed_costs dataframe 
 
 
@@ -721,4 +722,3 @@ result = left_table.merge(
 
 
 print(result)
->>>>>>> c7889d5c54a24af2c34356223b3e66f16a74ccf7

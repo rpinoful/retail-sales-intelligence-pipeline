@@ -1,10 +1,10 @@
 from pprint import pprint
-from extract import read_excel,read_parquet_files
-from validate import validate_all_columns
-from config import REQUIRED_COLUMNS, RAW_EXCEL_PATH,BRONZE_PATH,SILVER_PATH,GOLD_PATH
-from load import save_parquet
-from transform import transform_all_dataframes_bronze
-from model import build_gold_model
+from .extract import read_excel, read_parquet_files
+from .validate import validate_all_columns
+from .config import REQUIRED_COLUMNS, RAW_EXCEL_PATH, BRONZE_PATH, SILVER_PATH, GOLD_PATH
+from .load import save_parquet
+from .transform import transform_all_dataframes_bronze
+from .model import build_gold_model
 
 
 # Bronze Chapter

@@ -48,7 +48,6 @@ def transform_fixed_costs(dataframe_fixed_costs:pd.DataFrame)-> pd.DataFrame:
     fixed_costs:pd.DataFrame = dataframe_fixed_costs.copy()
     fixed_costs= fixed_costs.astype({'rent_brl': float, 'payroll_brl': float,'utilities_brl':float,'other_costs_brl':float})
     fixed_costs = fixed_costs.rename(columns={'month':'start_month'})
-    print(f" Was transform the dataframe  fixed_cost with sucess ✅")
     return fixed_costs
 
 
