@@ -1,11 +1,6 @@
 import pandas as pd
 
 
-
-
-
-
-
 def validate_fact_sales(df: pd.DataFrame) -> None:
     
     # QUANTITY COLUMN 
@@ -78,12 +73,57 @@ def validate_fact_sales(df: pd.DataFrame) -> None:
     
     
     
+    # DISCOUNT_PCT COLUMN
+
+    # 1 - Create invalid mask
+    invalid_mask_pct = (~df['discount_pct'].between(0,1)) |(df['discount_pct'].isna())
+    
+    # 2 - Count invalid discounts
+    quantity_invalid_discounts = invalid_mask_pct.sum()
+    
+    
+    # 3 - Raise ValueError if invalid discounts exist
+    if quantity_invalid_discounts !=0:
+        raise ValueError(f"Found {quantity_invalid_discounts} invalid discounts")
     
     
     
     
+
+
+
+
+def validate_sales_products(fact_sales: pd.DataFrame,dim_products: pd.DataFrame) -> None:
+    # Referencial integrity
+    
+    # 1 - creating mask with a isin function and two common columns 
+    invalid_referential_integrity = ~(fact_sales['product_id'].isin(dim_products['product_id']))
+    
+    #2 - Quantity of rows dataframes without integration
+    quantity_products = invalid_referential_integrity.sum()
     
     
+    # 3 - checking total 
+    if quantity_products !=0:
+        raise ValueError(f"Found {quantity_products} unregistered products")
+
+
+
+
+
+def validate_sales_stores(fact_sales: pd.DataFrame,dim_stores: pd.DataFrame) -> None:
+    # 1 - Creating mask with a isin function two column function and two common columns
+    invalid_referential_integrity_sales_stores = ~(fact_sales['store_id'].isin(dim_stores['store_id']))
+
+    
+    
+    # 2 - Quantity of rows dataframes without integration
+    quantity_stores = invalid_referential_integrity_sales_stores.sum()
+
+
+    #3 - checking total
+    if quantity_stores!=0:
+        raise ValueError(f"Found {quantity_stores} unregistered stores")
 
 
 
@@ -92,8 +132,23 @@ def validate_fact_sales(df: pd.DataFrame) -> None:
 
 
 
+def validate_sales_dim_dates(fact_sales: pd.DataFrame,dim_dates: pd.DataFrame) -> None:
+    
+    # 1 - Normalize date froms fact_Sales 
+    temp_fact_sales:pd.Series = fact_sales['sale_date'].dt.normalize()
+    
+    
+    #2 - checking if each date into fact_sales exists into dim_dates
+    invalid_mask_sales_date = ~(temp_fact_sales.isin(dim_dates['date']))
+    
+    
+    # 3 - quantity
+    qty_invalid_sales_date = invalid_mask_sales_date.sum()
 
-
+    #4 - checking total
+    if qty_invalid_sales_date!=0:
+        raise ValueError(f"Found {qty_invalid_sales_date} unregistered dates")
+    
 
 
 

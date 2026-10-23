@@ -1,7 +1,5 @@
-from asyncio.windows_events import NULL
-
 import pandas as pd
-from src.automated_validation_gold import validate_fact_sales
+from src.automated_validation_gold import validate_sales_stores
 
 
 
@@ -81,19 +79,107 @@ from src.automated_validation_gold import validate_fact_sales
 
 
 # TESTING UNIT PRICE 
-test_sales = pd.DataFrame({
+# test_sales = pd.DataFrame({
+#     "sale_id": [1001, 1002, 1003],
+#     "quantity": [5, 3, 8],
+#     "unit_price_brl": [12.50, -5.00, 20.00]
+# })
+
+
+
+# try:
+#     validate_fact_sales(test_sales)
+
+# except ValueError as error:
+#     print(f"TEST 2: PASSED - {error}")
+    
+# else:
+#     print("Unexpected error")
+    
+    
+    
+    
+    
+    
+    
+    
+    
+# # # TESTING UNIT PRICE 
+# # test_discount = pd.DataFrame({
+# #     "sale_id": [1001, 1002, 1003],
+# #     "product_id": [101,102,999],
+# # })
+
+
+
+# # try:
+# #     validate_fact_sales(test_discount)
+
+# # except ValueError as error:
+# #     print(f"TEST 2: PASSED - {error}")
+    
+# # else:
+# #     print("Unexpected error")
+    
+    
+    
+    
+    
+    
+
+
+# # TEST SALES INTEGRITY - products
+# test_sales_integrity = pd.DataFrame({
+#     "sale_id": [1001, 1002, 1003],
+#     "product_id": [101,102,999]
+# })
+
+
+
+
+# test_products_integrity = pd.DataFrame({
+#     "product_id": [101,102,103],
+#     "product_name" : ['Arroz','Leche','Café']
+# })
+
+
+
+
+# try:
+#     validate_sales_products(test_sales_integrity,test_products_integrity)
+
+# except ValueError as error:
+#     print(f"TEST 2: PASSED - {error}")
+    
+# else:
+#     print("TEST FAILED - Expected ValueError")
+    
+    
+    
+    
+    
+# TEST SALES INTEGRITY - stores
+test_sales_integrity = pd.DataFrame({
     "sale_id": [1001, 1002, 1003],
-    "quantity": [5, 3, 8],
-    "unit_price_brl": [12.50, -5.00, 20.00]
+    "store_id": [1,2,4]
 })
 
 
 
+
+test_stores_integrity = pd.DataFrame({
+    "store_id": [1,2,3],
+    "store_name" : ['Loja Centro','Loja Fronteira','E-commerce']
+})
+
+
+
+
 try:
-    validate_fact_sales(test_sales)
+    validate_sales_stores(test_sales_integrity,test_stores_integrity)
 
 except ValueError as error:
     print(f"TEST 2: PASSED - {error}")
     
 else:
-    print("Unexpected error")
+    print("TEST FAILED - Expected ValueError")

@@ -705,20 +705,32 @@ print(f" Quantity of invalid registers from month column: {invalid_months.sum()}
 # 6 - Checking fisica shop with rent_brl == 0 
 
 
-# 1 - Filter left and right table before merge 
+# # 1 - Filter left and right table before merge 
 
-left_table = fact_fixed_costs [fact_fixed_costs['rent_brl']==0]
-
-
-right_table = dim_stores [dim_stores['channel']=='Física']
+# left_table = fact_fixed_costs [fact_fixed_costs['rent_brl']==0]
 
 
-# 2 - merge left and right table 
-result = left_table.merge(
-    right_table,
-    on='store_id',
-    how='left'
-)
+# right_table = dim_stores [dim_stores['channel']=='Física']
 
 
-print(result)
+# # 2 - merge left and right table 
+# result = left_table.merge(
+#     right_table,
+#     on='store_id',
+#     how='left'
+# )
+
+
+# print(result)
+
+
+
+
+
+# CHECKING DATE FORMATS AND TYPES
+
+print(fact_sales["sale_date"].head())
+print(dim_dates["date"].head())
+
+print(fact_sales["sale_date"].dtype)
+print(dim_dates["date"].dtype)
