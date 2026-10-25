@@ -85,8 +85,49 @@ def validate_fact_sales(df: pd.DataFrame) -> None:
     # 3 - Raise ValueError if invalid discounts exist
     if quantity_invalid_discounts !=0:
         raise ValueError(f"Found {quantity_invalid_discounts} invalid discounts")
+
+
+
+
+
+    # measures about numeric values 
+
+
+    #- Gross amount
+
+    # 1 - recreating the calculate 
+    expected_gross_amount = df['quantity']*df['unit_price_brl'] 
     
-    
+    # 2 - filtering gross_amount outstider using mask
+    invalid_mask_values_outsiders_values_ga = ((expected_gross_amount - df['gross_amount']).abs())>0.01
+
+    # 3 - Counting invalid values returned by the mask
+    quantity_outsiders_gross_amount:int = invalid_mask_values_outsiders_values_ga.sum()
+
+
+    # 4 - Raise value error if exists gross amount outside define rule
+    if quantity_outsiders_gross_amount!=0:
+        raise ValueError(f"Found {quantity_outsiders_gross_amount} invalid gross amount values")
+
+
+
+
+    # Discount_amount
+
+    # 1 - recreating measure discount_amount (using series)
+    expected_discount_amount = df['gross_amount']*df['discount_pct']
+
+    # 2 - creating invalid mask for outsiders values between calculated column and original column
+    invalid_mask_values_outsiders_da=((expected_discount_amount -df['discount_amount']).abs())>0.01
+
+    # 3 - quantity of outsiders
+    quantity_values_outside_range = invalid_mask_values_outsiders_da.sum()
+
+
+    # 4 - checking if exists outsiders from the calculate discount_amount
+    if quantity_values_outside_range!=0:
+        raise ValueError(f"Found {quantity_values_outside_range} invalid outside range values")
+
     
     
 
