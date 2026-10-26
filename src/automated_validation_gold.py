@@ -127,8 +127,28 @@ def validate_fact_sales(df: pd.DataFrame) -> None:
     # 4 - checking if exists outsiders from the calculate discount_amount
     if quantity_values_outside_range!=0:
         raise ValueError(f"Found {quantity_values_outside_range} invalid outside range values")
-
     
+    
+    
+    
+    # NET AMOUNT MEASURE - CHECKING 
+
+
+    # 1 - Recreate the calculate of net_amount 
+    # net_amount = gross_amount - discount_amount
+    expected_net_amount = df['gross_amount']- df['discount_amount']
+
+
+
+    # 2 - creating invalid mask for outsiders values between calculated column and original column , is necessary round 2 decimals because a minimun difference 
+    invalid_mask_values_outsiders_na = (((expected_net_amount - df['net_amount']).abs()).round(2)) >0.01
+
+
+    # 3 - quantity of outsiders 
+    quantity_values_outside_range_na = invalid_mask_values_outsiders_na.sum()
+
+    if quantity_values_outside_range_na!=0:
+        raise ValueError(f"Found {quantity_values_outside_range_na} invalid outside range netamount values ")
     
 
 
@@ -194,8 +214,52 @@ def validate_sales_dim_dates(fact_sales: pd.DataFrame,dim_dates: pd.DataFrame) -
 
 
 
-def validate_dim_products(df: pd.DataFrame):
-    pass
+def validate_dim_products(df: pd.DataFrame)->None:
+    
+    # 1 - Duplicated value product_id column 
+    
+    # Creating mask
+    mask_duplicated_product_id = df['product_id'].duplicated()
+
+
+    # quantity of duplicated values from the column product_id
+    qty_duplicated_products_id = mask_duplicated_product_id.sum()
+
+
+    # if exists duplicated values
+    if qty_duplicated_products_id!=0:
+        raise ValueError(f"Found {qty_duplicated_products_id} product id duplicated")
+        
+    
+    
+    
+    
+    
+    # 2 - Null values in product_id column
+    mask_nulls_product_id = df['product_id'].isna()
+    
+    
+    # quantity of duplicated values from the column product_id
+    qty_nulls_products_id = mask_nulls_product_id.sum()
+    
+    
+        # if exists duplicated values
+    if qty_nulls_products_id!=0:
+        raise ValueError(f"Found {qty_nulls_products_id} product id Null values")
+            
+        
+        
+        
+        
+    
+    
+
+
+
+
+
+
+
 
 
 def validate_dim_stores(df: pd.DataFrame):

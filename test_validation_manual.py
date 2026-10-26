@@ -1,5 +1,5 @@
 import pandas as pd
-from src.automated_validation_gold import validate_fact_sales
+from src.automated_validation_gold import validate_dim_products
 
 
 
@@ -247,22 +247,22 @@ from src.automated_validation_gold import validate_fact_sales
 # testing entire validate_fact_sales 
 
 
-df_fact_sales = pd.read_parquet("data/gold/fact_sales.parquet")
+# df_fact_sales = pd.read_parquet("data/gold/fact_sales.parquet")
 
-df_fact_sales.loc[0, "discount_amount"] = 9999.99
+# df_fact_sales.loc[0, "discount_amount"] = 9999.99
 
 
-try:
-    validate_fact_sales(df_fact_sales)
+# try:
+#     validate_fact_sales(df_fact_sales)
     
 
     
-except ValueError as error:
-    print( f"TEST PASSED {error}")
+# except ValueError as error:
+#     print( f"TEST PASSED {error}")
 
 
-else:
-    print("End test execution ✅")
+# else:
+#     print("End test execution ✅")
     
     
 
@@ -309,3 +309,77 @@ else:
 
 
 
+
+# # NET AMOUNT MEASURE - CHECKING 
+
+# df_fact_sales = pd.read_parquet("data/gold/fact_sales.parquet")
+
+# try:
+#     validate_fact_sales(df_fact_sales)
+# except ValueError as error:
+#     print( f"TEST PASSED {error}")
+
+
+
+# else:
+#     print("TEST PASSED - All validations successful ✅")   
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 2 - VALIDATE DIM PRODUCTS FUNCTION 
+
+
+# # testing - duplicated checking
+
+# df = pd.read_parquet("data/gold/dim_products.parquet")
+
+
+# try:
+#     validate_dim_products(df)
+    
+    
+# except ValueError as error:
+#     print( f"TEST PASSED {error}")
+
+
+
+# else:
+#     print("TEST PASSED - All validations successful ✅")   
+
+
+
+
+
+# 2 - VALIDATE DIM PRODUCTS FUNCTION 
+
+
+# testing- nulls values 
+
+df = pd.read_parquet("data/gold/dim_products.parquet")
+
+
+
+
+
+
+try:
+    validate_dim_products(df)
+    
+    
+except ValueError as error:
+    print( f"TEST PASSED {error}")
+
+
+
+else:
+    print("TEST PASSED - All validations successful ✅")   
