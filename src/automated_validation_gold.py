@@ -1,5 +1,5 @@
 import pandas as pd
-from src.config import ALLOW_CATEGORIES,ALLOW_CURRENCIES_SUPPLIERS
+from src.config import ALLOW_CATEGORIES,ALLOW_CURRENCIES_SUPPLIERS,VALIDATE_CHANNELS
 
 def validate_fact_sales(df: pd.DataFrame) -> None:
     
@@ -292,6 +292,21 @@ def validate_dim_products(df: pd.DataFrame)->None:
     
     
     
+    #5 - product_name - nullls or empty
+    invalid_mask_product_name = (df['product_name'].isna()) | (df['product_name'].str.strip().eq(""))
+    
+    
+    qty_invalid_product_names = invalid_mask_product_name.sum()
+    
+    
+    
+    if qty_invalid_product_names:
+        raise ValueError(f"Found {qty_invalid_product_names} invalid product_names")
+    
+    
+    
+    
+            
     
     
     # 5 - Registered currencies
@@ -340,13 +355,53 @@ def validate_dim_products(df: pd.DataFrame)->None:
 
 
 
-
-
-
-
-
 def validate_dim_stores(df: pd.DataFrame):
-    pass
+    
+    # 1 - checking duplicate id_stores
+    mask_duplicate_stores_id = df['store_id'].duplicated() 
+    
+    qty_duplicates_stores_id = mask_duplicate_stores_id.sum()
+    
+    if qty_duplicates_stores_id:
+        raise ValueError(f"Found {qty_duplicates_stores_id} duplicated values in the column store_id")
+    
+    
+    
+    
+    
+    
+    
+    # 2 - checking nulls id_stores
+    mask_nulls_stores_id = df['store_id'].isna()
+        
+    qty_nulls_stores_id = mask_nulls_stores_id.sum()
+        
+    if qty_nulls_stores_id:
+        raise ValueError(f"Found {qty_nulls_stores_id} null values in the column store_id")
+    
+    
+    
+    
+    # 3 -  checking columns strings empty or only contains spaces
+    
+    
+    
+
+
+
+
+def check_empty_strings(df:pd.DataFrame) -> dict :
+    resultado ={}
+    string_columns = df.select_dtypes(include='string').columns
+    
+    for column in string_columns:
+        num_char_columns = df[column].str.strip().str.len().eq(0).sum()
+        resultado[column] = num_char_columns
+    
+    return resultado
+
+
+
 
 
 def validate_fact_fixed_costs(df: pd.DataFrame):
@@ -365,3 +420,8 @@ def validate_dim_date(df: pd.DataFrame):
 
 def validate_gold(dataframes_gold: dict[str, pd.DataFrame]):
     pass
+
+
+
+
+

@@ -1,5 +1,5 @@
 import pandas as pd
-from src.automated_validation_gold import validate_dim_products
+from src.automated_validation_gold import validate_dim_products,check_empty_strings
 
 
 
@@ -331,6 +331,12 @@ from src.automated_validation_gold import validate_dim_products
 
 
 
+####DIM _STORES
+df_fact_sales = pd.read_parquet("data/gold/fact_sales.parquet")
+
+
+
+
 
 
 
@@ -387,9 +393,12 @@ df = pd.read_parquet("data/gold/dim_products.parquet")
 
 # print(df["active"].map(type))
 
+
+df.loc[0, "product_name"] = " "
+
 try:
-    validate_dim_products(df)
-    
+    print(check_empty_strings(df))
+    print(df.dtypes)
     
 except ValueError as error:
     print( f"TEST PASSED {error}")

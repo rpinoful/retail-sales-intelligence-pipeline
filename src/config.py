@@ -58,3 +58,6 @@ ALLOW_CATEGORIES = ["Alimentos", "Chás", "Snacks", "Farinhas"]
 
 
 ALLOW_CURRENCIES_SUPPLIERS = ["USD","BRL"]
+
+
+VALIDATE_CHANNELS =['Física','Online']
