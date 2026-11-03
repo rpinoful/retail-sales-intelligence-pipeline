@@ -1,5 +1,5 @@
 import pandas as pd
-
+from src.config import ALLOW_CATEGORIES,ALLOW_CURRENCIES_SUPPLIERS
 
 def validate_fact_sales(df: pd.DataFrame) -> None:
     
@@ -247,9 +247,92 @@ def validate_dim_products(df: pd.DataFrame)->None:
     if qty_nulls_products_id!=0:
         raise ValueError(f"Found {qty_nulls_products_id} product id Null values")
             
+    
+    
+    
+    
+    # 3 - Unit_cost validate 
+    
+    # 1 - creating mask to filter invalid costs from unit_cost_brl dim_products
+    mask_invalid_costs_products = (df['unit_cost'] <=0) | (df['unit_cost'].isna())
+    
+    
+    
+    # 2 - How many null values was found into the cost column
+    qty_invalid_costs = mask_invalid_costs_products.sum()
+    
+    
+    
+    
+    #3 - Forcing error if exist some invalid cost
+    if qty_invalid_costs:
+        raise ValueError(f"Found {qty_invalid_costs} invalid costs values")
+    
+    
+    
+    
+    
+    # 4 - register categories 
+    
+    # 1 - creating mask to filter invalid costs from unit_cost_brl dim_products
+    mask_invalid_categories_products = ~(df['category'].isin(ALLOW_CATEGORIES))
         
         
         
+    # 2 - How many null values was found into the cost column
+    qty_invalid_categories = mask_invalid_categories_products.sum()
+        
+        
+        
+        
+    #3 - Forcing error if exist some invalid cost
+    if qty_invalid_categories:
+        raise ValueError(f"Found {qty_invalid_categories} invalid categories")
+    
+    
+    
+    
+    
+    
+    # 5 - Registered currencies
+    
+    # 1 - creating mask to filter invalid costs from unit_cost_brl dim_products
+    mask_invalid_currencies = ~(df['supplier_currency'].str.strip().str.upper().isin(ALLOW_CURRENCIES_SUPPLIERS))
+            
+            
+            
+    # 2 - How many null values was found into the cost column
+    qty_invalid_currencies = mask_invalid_currencies.sum()
+            
+            
+            
+            
+    #3 - Forcing error if exist some invalid cost
+    if qty_invalid_currencies:
+        raise ValueError(f"Found {qty_invalid_currencies} invalid supplier_currencies")
+        
+    
+    
+    
+    
+    
+    # 6 - Active 
+    
+    #1 - creating invalid mask , not boolean and not nulls
+    #invalid_mask_active_product =  (df["active"].dtype!=bool) | (df["active"].isna())
+    
+    invalid_mask_active_product = ~(df["active"].map(lambda bool_values: isinstance(bool_values,bool)))
+
+    # 2 - quantity of invalid values from the column active
+    qty_invalid_active_values = invalid_mask_active_product.sum()
+    
+    
+    
+    
+    # 3 - quantity of invalid or nulls values from active column
+    if qty_invalid_active_values:
+        raise ValueError(f"Found {qty_invalid_active_values} not boolean values or null values in the column")
+
         
     
     

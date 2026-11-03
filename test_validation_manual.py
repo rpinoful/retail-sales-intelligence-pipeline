@@ -363,14 +363,29 @@ from src.automated_validation_gold import validate_dim_products
 # 2 - VALIDATE DIM PRODUCTS FUNCTION 
 
 
-# testing- nulls values 
+
+
+# testing- active columns (nulls and type of values )
 
 df = pd.read_parquet("data/gold/dim_products.parquet")
 
 
+#allow that series add new values , transforming 
+# # df["active"] = df["active"].astype(object)
+
+
+# 1 - adding null value
+#df.loc[0, "active"] = None
 
 
 
+# 2 - changing type from the serie
+
+
+# 2 - adding new value to the 1 index like string value
+# df.loc[1, "active"] = str(df.loc[1, "active"])
+
+# print(df["active"].map(type))
 
 try:
     validate_dim_products(df)
@@ -378,6 +393,7 @@ try:
     
 except ValueError as error:
     print( f"TEST PASSED {error}")
+    
 
 
 
