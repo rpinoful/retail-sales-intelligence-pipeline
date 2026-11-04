@@ -1,6 +1,5 @@
 import pandas as pd
-from src.automated_validation_gold import validate_dim_products,check_empty_strings
-
+from src.automated_validation_gold import validate_dim_products,check_empty_strings,validate_dim_stores
 
 
 # TESTING QUANTITY
@@ -373,7 +372,7 @@ df_fact_sales = pd.read_parquet("data/gold/fact_sales.parquet")
 
 # testing- active columns (nulls and type of values )
 
-df = pd.read_parquet("data/gold/dim_products.parquet")
+df = pd.read_parquet("data/gold/dim_stores.parquet")
 
 
 #allow that series add new values , transforming 
@@ -394,11 +393,12 @@ df = pd.read_parquet("data/gold/dim_products.parquet")
 # print(df["active"].map(type))
 
 
-df.loc[0, "product_name"] = " "
+df.loc[0, "store_name"] = "E-commerce"
+df.loc[0, "store_id"] = 4
 
 try:
-    print(check_empty_strings(df))
-    print(df.dtypes)
+    validate_dim_stores(df)
+    
     
 except ValueError as error:
     print( f"TEST PASSED {error}")

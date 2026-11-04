@@ -382,7 +382,41 @@ def validate_dim_stores(df: pd.DataFrame):
     
     
     
+    
+    
+    
+    
     # 3 -  checking columns strings empty or only contains spaces
+    mask_invalid_channel = ~(df['channel'].isin(VALIDATE_CHANNELS))
+    
+    qty_invalid_channel = mask_invalid_channel.sum()
+    
+    
+    if qty_invalid_channel:
+        raise ValueError(f"Found {qty_invalid_channel} invalid channels")
+    
+    
+    
+    
+    
+    # 4 - Referencial integrity (count how many distinct store_name have distinct store_id , this help to identify if have store_name with differents names )
+    store_name_different = df.groupby("store_name")['store_id'].nunique()>1
+    
+    
+    qty_store_name_different = store_name_different.sum()
+    
+    if qty_store_name_different:
+        raise ValueError(f"Found {qty_store_name_different} stores with same name and different id ")
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
