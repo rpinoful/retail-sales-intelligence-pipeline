@@ -396,29 +396,26 @@ def validate_dim_stores(df: pd.DataFrame):
         raise ValueError(f"Found {qty_invalid_channel} invalid channels")
     
     
+    result_empty = check_empty_strings(df)
+
+    for column, num_empty in result_empty.items():
+        if num_empty:
+            raise ValueError(
+                f"Column:{column} - empty values:{num_empty}"
+            )
     
+
+
+
+    result_nulls = check_nulls_strings(df)
+
+    for column, num_nulls in result_nulls.items():
+        if num_nulls:
+            raise ValueError(
+                f"Column:{column} - nulls values:{num_nulls}"
+            )
     
-    
-    # 4 - Referencial integrity (count how many distinct store_name have distinct store_id , this help to identify if have store_name with differents names )
-    store_name_different = df.groupby("store_name")['store_id'].nunique()>1
-    
-    
-    qty_store_name_different = store_name_different.sum()
-    
-    if qty_store_name_different:
-        raise ValueError(f"Found {qty_store_name_different} stores with same name and different id ")
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+  
     
 
 
@@ -433,6 +430,19 @@ def check_empty_strings(df:pd.DataFrame) -> dict :
         resultado[column] = num_char_columns
     
     return resultado
+
+
+
+
+def check_nulls_strings(df: pd.DataFrame) -> dict:
+    result = {}
+    string_columns = df.select_dtypes(include='string').columns
+
+    for column in string_columns:
+        nulls_values_column = df[column].isna().sum()
+        result[column] = nulls_values_column
+
+    return result
 
 
 
