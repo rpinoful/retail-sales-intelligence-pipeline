@@ -1,4 +1,5 @@
 import pandas as pd
+from src.config import ALLOWED_CATEGORIES,ALLOWED_CURRENCIES_SUPPLIERS
 
 
 def validate_fact_sales(df: pd.DataFrame) -> None:
@@ -214,7 +215,7 @@ def validate_sales_dim_dates(fact_sales: pd.DataFrame,dim_dates: pd.DataFrame) -
 
 
 
-def validate_dim_products(df: pd.DataFrame)->None:
+def validate_dim_products(df:pd.DataFrame)->None:
     
     # 1 - Duplicated value product_id column 
     
@@ -246,13 +247,75 @@ def validate_dim_products(df: pd.DataFrame)->None:
         # if exists duplicated values
     if qty_nulls_products_id!=0:
         raise ValueError(f"Found {qty_nulls_products_id} product id Null values")
-            
+
+
+
+
+
+
+    # 3 - Validate unit cost 
+
+    # 1 - mask for invalid costs 
+    mask_invalid_costs_products = (df['unit_cost']<=0)  | (df['unit_cost'].isna())
         
-        
-        
-        
+
+    # 2 - QUANTITY INVALID COSTS    
+    qty_invalid_costs = mask_invalid_costs_products.sum()
+
+
+    if qty_invalid_costs!=0:
+        raise ValueError(f"Found {qty_invalid_costs} invalid costs")
+
+
+
+
+
+    # 4 - invalid currencies
+    mask_invalid_currencies = ~((df['supplier_currency'].str.strip().str.upper()).isin(ALLOWED_CURRENCIES_SUPPLIERS))
+
+
+    qty_invalid_currencies = mask_invalid_currencies.sum()
+
+
+    if qty_invalid_currencies!=0:
+        raise ValueError(f"Found {qty_invalid_currencies} invalid suppliers currencies")
+
+
+
+
+
+
+    # 6 checking values from actrive column
+    invalid_bool_values_mask = ~(df['active'].map(lambda active: isinstance(active, bool)))
+
+    qty_invalid_bool_values = invalid_bool_values_mask.sum()
+
+
+    if qty_invalid_bool_values!=0:
+            raise ValueError(f"Found {qty_invalid_bool_values} invalid bool values from active column")
+
+
+    
+
+    # 7 - checking invalid name products dim_products 
+    invalid_name_product_mask = (df['product_name'].str.strip().eq("")) | (df['product_name'].isna())
+
+
+
+    qty_invalid_name_products_values = invalid_name_product_mask.sum()
     
     
+    if qty_invalid_name_products_values!=0:
+        raise ValueError(f"Found {qty_invalid_name_products_values} invalid product names")
+
+
+
+    
+
+
+
+
+
 
 
 

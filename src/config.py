@@ -52,3 +52,10 @@ FIXED_COST_COLUMNS = [
     "other_costs_brl",
     "total_fixed_cost_brl",
 ]
+
+
+
+ALLOWED_CATEGORIES = ["Alimentos", "Chás", "Snacks", "Farinhas"]
+
+
+ALLOWED_CURRENCIES_SUPPLIERS = ['USD','BRL']

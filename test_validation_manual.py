@@ -367,8 +367,12 @@ from src.automated_validation_gold import validate_dim_products
 
 df = pd.read_parquet("data/gold/dim_products.parquet")
 
+# adding to active column a invalid value
 
+# 1 - transform bool column to object , this will allow add any value to the column
 
+# 2  - adding invalid value to column
+# df.loc[0, "gross_amount"] = 9999.99
 
 
 
