@@ -1,6 +1,6 @@
 import pandas as pd
-from src.automated_validation_gold import validate_dim_products,check_empty_strings,validate_dim_stores
-
+from src.automated_validation_gold import validate_dim_products,check_empty_strings,validate_dim_stores,validate_fact_fixed_costs_stores,check_invalid_numeric_values,validate_fact_fixed_costs,check_physical_stores_zero_rent
+from src.config import FIXED_COST_COLUMNS
 
 # TESTING QUANTITY
 
@@ -331,7 +331,7 @@ from src.automated_validation_gold import validate_dim_products,check_empty_stri
 
 
 ####DIM _STORES
-df_fact_sales = pd.read_parquet("data/gold/fact_sales.parquet")
+
 
 
 
@@ -372,9 +372,9 @@ df_fact_sales = pd.read_parquet("data/gold/fact_sales.parquet")
 
 # testing- active columns (nulls and type of values )
 
-df = pd.read_parquet("data/gold/dim_stores.parquet")
+df_dim_stores = pd.read_parquet("data/gold/dim_stores.parquet")
 
-
+df_fact_fixed_costs = pd.read_parquet("data/gold/fact_fixed_costs.parquet")
 #allow that series add new values , transforming 
 # # df["active"] = df["active"].astype(object)
 
@@ -393,11 +393,11 @@ df = pd.read_parquet("data/gold/dim_stores.parquet")
 # print(df["active"].map(type))
 
 
-df.loc[0, "store_name"] = "E-commerce"
-df.loc[0, "store_id"] = 4
+#df.loc[0, "store_name"] = "E-commerce"
+#df_fact_fixed_costs.loc[1, "total_fixed_cost_brl"] = None
 
 try:
-    validate_dim_stores(df)
+    validate_fact_fixed_costs(df_fact_fixed_costs)
     
     
 except ValueError as error:
@@ -405,6 +405,37 @@ except ValueError as error:
     
 
 
-
 else:
-    print("TEST PASSED - All validations successful ✅")   
+    print("TEST PASSED - All validations successful ✅") 
+      
+
+
+
+#checking historic months 
+qty_historic_months = df_fact_fixed_costs.groupby('store_id')['start_month'].nunique()
+
+
+# sort dataframe
+df_sort_f_costs = df_fact_fixed_costs.sort_values(by=['start_month','store_id'])
+
+
+#group by the dataframe and applying shift 
+df_previous_rent_brl = df_sort_f_costs.groupby('store_id')['rent_brl'].shift(1)
+
+#month over month measure 
+month_over_month_pct = ((df_sort_f_costs['rent_brl'] - df_previous_rent_brl))/(df_previous_rent_brl)*100
+
+ 
+
+
+#booleans masks for differents cases 
+
+# 1 - rent brl changing from zero to some positive values
+
+#1.1 - Creating the mask
+boolean_mask_case_1 = (df_previous_rent_brl==0) & (df_sort_f_costs['rent_brl']>0) 
+
+#1.2 filtering sort dataframe with a mask
+
+
+

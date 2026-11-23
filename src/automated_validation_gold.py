@@ -1,5 +1,5 @@
 import pandas as pd
-from src.config import ALLOW_CATEGORIES,ALLOW_CURRENCIES_SUPPLIERS,VALIDATE_CHANNELS
+from src.config import ALLOW_CATEGORIES,ALLOW_CURRENCIES_SUPPLIERS,VALIDATE_CHANNELS,FIXED_COST_COLUMNS,FIXED_COST_COMPONENT_COLUMNS
 
 def validate_fact_sales(df: pd.DataFrame) -> None:
     
@@ -421,6 +421,127 @@ def validate_dim_stores(df: pd.DataFrame):
 
 
 
+
+
+
+def validate_fact_fixed_costs_stores(df1: pd.DataFrame,df2: pd.DataFrame)->None:
+
+    # 1- Creating the mask
+    mask_integrity_fixed_costs_stores = ~(df1['store_id'].isin(df2['store_id']))
+
+    # 2 - how many rows contains without referencial intregity
+    qty_invalid_stores_integrity = mask_integrity_fixed_costs_stores.sum()
+
+    # 3 - 
+    if qty_invalid_stores_integrity:
+        raise ValueError(f"Found {qty_invalid_stores_integrity} IDs in fact_fixed_costs missing from dim_stores")
+
+
+
+
+
+
+def validate_fact_fixed_costs(df: pd.DataFrame):
+
+    #- duplicity
+
+    # 1 - creating a mask 
+    mask_duplicated_store_month= df.duplicated(subset=['store_id','start_month'])
+
+    #2 - qty of month rent duplicated
+    qty_duplicated_store_month = mask_duplicated_store_month.sum()
+
+    #3  - 
+    if qty_duplicated_store_month:
+        raise ValueError(f"Found {qty_duplicated_store_month} duplicated store_id/start_month combinations")
+
+
+
+
+    # invalid values column rent_brl
+    mask_invalid_rent_brl = (df['rent_brl']<0) | (df['rent_brl'].isna())
+    
+    
+    
+    qty_invalid_rent_brl = mask_invalid_rent_brl.sum()
+
+
+    if qty_invalid_rent_brl:
+        raise ValueError(f"Found {qty_invalid_rent_brl} negative or null values in rent_brl")
+
+
+
+    #invalid numeric values
+    results_invalid_numeric_values = check_invalid_numeric_values(df,FIXED_COST_COLUMNS)
+
+    for numeric_column,value in results_invalid_numeric_values.items():
+        if value:
+            raise ValueError(f"Column:{numeric_column} - invalid values: {value}")
+
+
+
+    #validating start_month
+
+    # 1 - taking a day from dataframe using dt , and making a mask throght it 
+    mask_invalid_dates = ~(df['start_month'].dt.is_month_start)
+
+
+    #2 - quantify invald dates
+    qty_invalid_start_month = mask_invalid_dates.sum()
+
+
+    # 3 - checking if exists invalid dates and returning value error 
+    if qty_invalid_start_month:
+        raise ValueError(f"Found {qty_invalid_start_month} invalid or null dates in start_month")
+
+
+
+
+    # Validation total_fixed_cost_brl 
+
+    # 4 - Checking if  total_fixed_cost_brl is a sum of four columns in to the dataframe
+    total_fixed_cost_sum_check:pd.Series= df[FIXED_COST_COMPONENT_COLUMNS].sum(axis=1)
+
+    mask_total_fixed_costs = ((((df['total_fixed_cost_brl'] - total_fixed_cost_sum_check).round(2)).abs())>0.01)
+
+    qty_total_outside_range = mask_total_fixed_costs.sum()
+
+
+    if qty_total_outside_range:
+        raise ValueError(f"Found {qty_total_outside_range} total fixed costs outside range")
+
+    
+
+
+
+
+
+
+
+
+
+
+def validate_dim_date(df: pd.DataFrame):
+    pass
+
+
+
+
+
+
+
+
+def validate_gold(dataframes_gold: dict[str, pd.DataFrame]):
+    pass
+
+
+
+
+
+
+# AUX FUNCTIONS 
+
+
 def check_empty_strings(df:pd.DataFrame) -> dict :
     resultado ={}
     string_columns = df.select_dtypes(include='string').columns
@@ -447,23 +568,37 @@ def check_nulls_strings(df: pd.DataFrame) -> dict:
 
 
 
+def check_invalid_numeric_values(df: pd.DataFrame,numeric_columns:list) -> dict:
+    result = {}
 
-def validate_fact_fixed_costs(df: pd.DataFrame):
-    pass
+    for column in numeric_columns:
+        invalid_values_numeric_column = ((df[column]<0) | (df[column].isna())).sum()
+        result[column] = invalid_values_numeric_column
 
-
-def validate_dim_date(df: pd.DataFrame):
-    pass
-
-
-
+    return result
 
 
 
 
 
-def validate_gold(dataframes_gold: dict[str, pd.DataFrame]):
-    pass
+def check_physical_stores_zero_rent(df_fixed_costs: pd.DataFrame,df_stores: pd.DataFrame) -> pd.DataFrame:
+
+    #1- Filtering - fisicas stores
+    df_stores_fisica = df_stores.loc[df_stores['channel']=='Física']
+
+
+    #2 - Filtering df_fixed_costs with rent_brl equals to zero
+    df_fixed_costs_rent_brl_0 = df_fixed_costs.loc[df_fixed_costs['rent_brl']== 0]
+
+
+    # 3 - merge the dataframe results after it filtering
+    df_result = pd.merge(df_stores_fisica,df_fixed_costs_rent_brl_0,on='store_id',how='inner')
+
+
+    return df_result
+
+
+
 
 
 

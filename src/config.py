@@ -54,6 +54,14 @@ FIXED_COST_COLUMNS = [
 ]
 
 
+FIXED_COST_COMPONENT_COLUMNS = [
+    "rent_brl",
+    "payroll_brl",
+    "utilities_brl",
+    "other_costs_brl"
+]
+
+
 ALLOW_CATEGORIES = ["Alimentos", "Chás", "Snacks", "Farinhas"]
 
 
